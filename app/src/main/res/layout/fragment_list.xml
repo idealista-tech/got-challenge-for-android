@@ -4,20 +4,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="li.nibble.android.codingtest.MainActivity">
+    android:layout_height="match_parent">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv"
+        android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/t"
         tools:context="li.nibble.android.codingtest.MainActivity"
         tools:showIn="@layout/fragment_list"
         />
 
     <android.support.v4.widget.ContentLoadingProgressBar
-        android:id="@+id/pb"
+        android:id="@+id/content_loading_progress_bar"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
