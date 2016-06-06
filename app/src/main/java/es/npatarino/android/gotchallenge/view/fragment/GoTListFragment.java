@@ -26,17 +26,25 @@ import es.npatarino.android.gotchallenge.repository.GoTRepository;
 import es.npatarino.android.gotchallenge.view.activity.DetailActivity;
 import es.npatarino.android.gotchallenge.view.adapter.GoTAdapter;
 import es.npatarino.android.gotchallenge.view.listener.ItemClickListener;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class GoTListFragment extends FragmentBase implements ItemClickListener {
 
     private static final String TAG = "GoTListFragment";
 
-    @Inject GoTAdapter adapter;
-    @Inject LayoutManager layoutManager;
-    @Inject GoTRepository goTRepository;
+    @Inject
+    GoTAdapter adapter;
+    @Inject
+    LayoutManager layoutManager;
+    @Inject
+    GoTRepository goTRepository;
 
-    @BindView(R.id.progressBar) ContentLoadingProgressBar progressBar;
-    @BindView(R.id.recyclerView) RecyclerView recyclerView;
+    @BindView(R.id.progressBar)
+    ContentLoadingProgressBar progressBar;
+    @BindView(R.id.recyclerView)
+    RecyclerView recyclerView;
 
     public static Fragment newInstance() {
         return new GoTListFragment();
@@ -48,8 +56,17 @@ public class GoTListFragment extends FragmentBase implements ItemClickListener {
         ButterKnife.bind(this, rootView);
 
         configRecyclerView();
+        displayLoading(true);
 
-        displayCharacters(goTRepository.getCharacters());
+        goTRepository.getCharacters()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(characters -> {
+                    displayLoading(false);
+                    displayCharacters(characters);
+                }, error -> {
+                    displayLoading(false);
+                });
 
         return rootView;
     }
@@ -57,7 +74,13 @@ public class GoTListFragment extends FragmentBase implements ItemClickListener {
     private void displayCharacters(List<GoTCharacter> characters) {
         adapter.addAll(characters);
         adapter.notifyDataSetChanged();
-        progressBar.hide();
+    }
+
+    private void displayLoading(boolean show) {
+        if (show)
+            progressBar.show();
+        else
+            progressBar.hide();
     }
 
     private void configRecyclerView() {

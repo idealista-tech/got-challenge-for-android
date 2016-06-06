@@ -16,9 +16,7 @@ import rx.schedulers.Schedulers;
 
 public class RetrofitDataSource implements GoTDataSource {
 
-    public static final String URL = "http://52.18.228.107:3000/";
-
-    GoTService goTService;
+    private GoTService goTService;
 
     public RetrofitDataSource(GoTService goTService) {
         this.goTService = goTService;
@@ -26,15 +24,8 @@ public class RetrofitDataSource implements GoTDataSource {
 
     @Override
     public Observable<List<GoTCharacterEntity>> getCharacters() {
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
 
-            GoTService service = retrofit.create(GoTService.class);
+            return goTService.listCharacters();
 
-            return service.listCharacters()
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeOn(Schedulers.io());
     }
 }

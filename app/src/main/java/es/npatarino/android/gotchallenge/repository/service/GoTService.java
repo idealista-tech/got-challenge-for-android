@@ -8,6 +8,7 @@ import rx.Observable;
 
 public interface GoTService {
 
-  @GET("characters")
-  Observable<List<GoTCharacterEntity>> listCharacters();
+    @GET("characters")
+    Observable<List<GoTCharacterEntity>> listCharacters();
+
 }

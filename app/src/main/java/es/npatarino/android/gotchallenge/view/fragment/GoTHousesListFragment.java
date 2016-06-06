@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +27,9 @@ import es.npatarino.android.gotchallenge.model.GoTHouse;
 import es.npatarino.android.gotchallenge.repository.GoTRepository;
 import es.npatarino.android.gotchallenge.view.adapter.GoTHouseAdapter;
 import es.npatarino.android.gotchallenge.view.listener.ItemClickListener;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class GoTHousesListFragment extends FragmentBase implements ItemClickListener{
 
@@ -47,8 +51,17 @@ public class GoTHousesListFragment extends FragmentBase implements ItemClickList
         ButterKnife.bind(this, rootView);
 
         configRecyclerView();
+        displayLoading(true);
 
-        displayHouses(goTRepository.getCharacters());
+        goTRepository.getCharacters()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(characters -> {
+                    displayLoading(false);
+                    displayHouses(characters);
+                }, error -> {
+                    displayLoading(false);
+                });
 
         return rootView;
     }
@@ -63,7 +76,13 @@ public class GoTHousesListFragment extends FragmentBase implements ItemClickList
         ArrayList<GoTHouse> houses = extractHouses(characters);
         adapter.addAll(houses);
         adapter.notifyDataSetChanged();
-        progressBar.hide();
+    }
+
+    private void displayLoading(boolean show) {
+        if (show)
+            progressBar.show();
+        else
+            progressBar.hide();
     }
 
     @NonNull

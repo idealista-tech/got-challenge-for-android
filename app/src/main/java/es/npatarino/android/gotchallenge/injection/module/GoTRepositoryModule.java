@@ -10,7 +10,7 @@ import dagger.Provides;
 import es.npatarino.android.gotchallenge.Constants;
 import es.npatarino.android.gotchallenge.R;
 import es.npatarino.android.gotchallenge.model.mapper.GoTEntityMapper;
-import es.npatarino.android.gotchallenge.repository.GoTBestRepository;
+import es.npatarino.android.gotchallenge.repository.GoTFactoryRepository;
 import es.npatarino.android.gotchallenge.repository.GoTRepository;
 import es.npatarino.android.gotchallenge.repository.data.LocalDataSource;
 import es.npatarino.android.gotchallenge.repository.data.RetrofitDataSource;
@@ -47,6 +47,11 @@ public class GoTRepositoryModule {
     }
 
     @Provides @Singleton
+    public RetrofitDataSource provideRetrofitDataSource(GoTService goTService){
+        return new RetrofitDataSource(goTService);
+    }
+
+    @Provides @Singleton
     public LocalDataSource provideLocalDataSource(){
         return new LocalDataSource();
     }
@@ -55,6 +60,6 @@ public class GoTRepositoryModule {
     GoTRepository provideGoTRepository(GoTEntityMapper goTEntityMapper,
                                        RetrofitDataSource retrofitDataSource,
                                        LocalDataSource localDataSource){
-        return new GoTBestRepository(goTEntityMapper, retrofitDataSource, localDataSource);
+        return new GoTFactoryRepository(goTEntityMapper, retrofitDataSource, localDataSource);
     }
 }

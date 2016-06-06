@@ -3,8 +3,6 @@ package es.npatarino.android.gotchallenge.injection.module;
 import dagger.Module;
 import dagger.Provides;
 import es.npatarino.android.gotchallenge.injection.scope.FragmentScope;
-import es.npatarino.android.gotchallenge.repository.GoTBestRepository;
-import es.npatarino.android.gotchallenge.repository.GoTRepository;
 import es.npatarino.android.gotchallenge.view.adapter.GoTHouseAdapter;
 import es.npatarino.android.gotchallenge.view.fragment.GoTHousesListFragment;
 

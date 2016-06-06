@@ -9,16 +9,16 @@ import es.npatarino.android.gotchallenge.repository.data.LocalDataSource;
 import es.npatarino.android.gotchallenge.repository.data.RetrofitDataSource;
 import rx.Observable;
 
-public class GoTBestRepository implements GoTRepository {
+public class GoTFactoryRepository implements GoTRepository {
 
     GoTEntityMapper goTEntityMapper;
 
     RetrofitDataSource retrofitDataSource;
     LocalDataSource localDataSource;
 
-    public GoTBestRepository(GoTEntityMapper goTEntityMapper,
-                             RetrofitDataSource retrofitDataSource,
-                             LocalDataSource localDataSource) {
+    public GoTFactoryRepository(GoTEntityMapper goTEntityMapper,
+                                RetrofitDataSource retrofitDataSource,
+                                LocalDataSource localDataSource) {
         this.goTEntityMapper = goTEntityMapper;
         this.retrofitDataSource = retrofitDataSource;
         this.localDataSource = localDataSource;
@@ -27,7 +27,8 @@ public class GoTBestRepository implements GoTRepository {
     @Override
     public Observable<List<GoTCharacter>> getCharacters() {
 
-        return getBestDataSource().getCharacters()
+        return getBestDataSource()
+                .getCharacters()
                 .map(goTEntityMapper::transform);
     }
 
