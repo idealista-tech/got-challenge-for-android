@@ -31,6 +31,11 @@ public class GoTAdapter extends AdapterListBase<GoTCharacter> {
         }
     }
 
+    public void add(GoTCharacter goTCharacter){
+        data.add(goTCharacter);
+        notifyItemInserted(data.size());
+    }
+
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new GoTCharacterViewHolder(activity, inflate(parent, layout), itemClickListener);

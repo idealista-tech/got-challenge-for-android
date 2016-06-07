@@ -56,7 +56,7 @@ public class DetailActivity extends BaseActivity {
     }
 
     private void displayCharacter() {
-        Picasso.with(this).load(character.getImageUrl()).into(ivPhoto);
+        Picasso.with(this).load(character.getImageUrl()).fit().centerInside().into(ivPhoto);
         tvName.setText(character.getName());
         tvDescripcion.setText(character.getDescription());
     }
