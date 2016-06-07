@@ -25,6 +25,7 @@ public class GoTAdapter extends AdapterListBase<GoTCharacter> {
     }
 
     public void addAll(Collection<GoTCharacter> collection) {
+        data.clear();
         for (int i = 0; i < collection.size(); i++) {
             data.add((GoTCharacter) collection.toArray()[i]);
         }

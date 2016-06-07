@@ -2,17 +2,14 @@ package es.npatarino.android.gotchallenge.view.fragment;
 
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -22,21 +19,17 @@ import butterknife.ButterKnife;
 import es.npatarino.android.gotchallenge.GoTApplication;
 import es.npatarino.android.gotchallenge.R;
 import es.npatarino.android.gotchallenge.injection.module.GoTHousesListFragmentModule;
-import es.npatarino.android.gotchallenge.model.GoTCharacter;
 import es.npatarino.android.gotchallenge.model.GoTHouse;
 import es.npatarino.android.gotchallenge.repository.GoTRepository;
 import es.npatarino.android.gotchallenge.view.adapter.GoTHouseAdapter;
 import es.npatarino.android.gotchallenge.view.listener.ItemClickListener;
 import rx.Observable;
-import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
-import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 
 public class GoTHousesListFragment extends FragmentBase implements ItemClickListener{
 
-    private static final String TAG = "GoTHousesListFragment";
+    private static final String TAG = GoTHousesListFragment.class.getSimpleName();
 
     @BindView(R.id.progressBar) ContentLoadingProgressBar progressBar;
     @BindView(R.id.recyclerView) RecyclerView recyclerView;
