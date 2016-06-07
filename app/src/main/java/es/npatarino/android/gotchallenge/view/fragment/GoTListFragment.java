@@ -34,17 +34,12 @@ public class GoTListFragment extends FragmentBase implements ItemClickListener {
 
     private static final String TAG = "GoTListFragment";
 
-    @Inject
-    GoTAdapter adapter;
-    @Inject
-    LayoutManager layoutManager;
-    @Inject
-    GoTRepository goTRepository;
+    @Inject GoTAdapter adapter;
+    @Inject LayoutManager layoutManager;
+    @Inject GoTRepository goTRepository;
 
-    @BindView(R.id.progressBar)
-    ContentLoadingProgressBar progressBar;
-    @BindView(R.id.recyclerView)
-    RecyclerView recyclerView;
+    @BindView(R.id.progressBar) ContentLoadingProgressBar progressBar;
+    @BindView(R.id.recyclerView) RecyclerView recyclerView;
 
     public static Fragment newInstance() {
         return new GoTListFragment();

@@ -11,6 +11,8 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.io.IOException;
 import java.net.URL;
 
@@ -28,7 +30,7 @@ public class DetailActivity extends BaseActivity {
     private static final String EXTRA_CHARACTER = "CHARACTER";
 
     @BindView(R.id.iv_photo) ImageView ivPhoto;
-    @BindView(R.id.tvName) TextView tvName;
+    @BindView(R.id.tv_name) TextView tvName;
     @BindView(R.id.tv_description) TextView tvDescripcion;
     @BindView(R.id.toolbar) Toolbar toolbar;
 
@@ -50,7 +52,13 @@ public class DetailActivity extends BaseActivity {
 
         getExtraData();
         configToolbar();
-        loadData();
+        displayCharacter();
+    }
+
+    private void displayCharacter() {
+        Picasso.with(this).load(character.getImageUrl()).into(ivPhoto);
+        tvName.setText(character.getName());
+        tvDescripcion.setText(character.getDescription());
     }
 
     private void configToolbar() {
@@ -59,29 +67,6 @@ public class DetailActivity extends BaseActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-    }
-
-    private void loadData() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                URL url = null;
-                try {
-                    url = new URL(character.getImageUrl());
-                    final Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                    DetailActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ivPhoto.setImageBitmap(bmp);
-                            tvName.setText(character.getName());
-                            tvDescripcion.setText(character.getDescription());
-                        }
-                    });
-                } catch (IOException e) {
-                    Log.e(TAG, e.getLocalizedMessage());
-                }
-            }
-        }).start();
     }
 
     @Override

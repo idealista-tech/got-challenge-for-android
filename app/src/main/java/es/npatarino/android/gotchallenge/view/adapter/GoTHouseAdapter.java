@@ -13,15 +13,15 @@ import java.util.Collection;
 
 import es.npatarino.android.gotchallenge.R;
 import es.npatarino.android.gotchallenge.model.GoTHouse;
+import es.npatarino.android.gotchallenge.view.adapter.holder.GoTHouseViewHolder;
 import es.npatarino.android.gotchallenge.view.listener.ItemClickListener;
 
 public class GoTHouseAdapter extends AdapterListBase<GoTHouse> {
 
-    private Activity activity;
+    private int layout = R.layout.got_house_row;
 
     public GoTHouseAdapter(Activity activity, ItemClickListener itemClickListener) {
-        super(itemClickListener);
-        this.activity = activity;
+        super(activity, itemClickListener);
     }
 
     @Override
@@ -37,29 +37,13 @@ public class GoTHouseAdapter extends AdapterListBase<GoTHouse> {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new GotCharacterViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.got_house_row, parent, false));
+        return new GoTHouseViewHolder(activity, inflate(parent, layout), itemClickListener);
     }
 
     @Override
-    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
-        GotCharacterViewHolder gotCharacterViewHolder = (GotCharacterViewHolder) holder;
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        GoTHouseViewHolder gotCharacterViewHolder = (GoTHouseViewHolder) holder;
         gotCharacterViewHolder.render(data.get(position));
-    }
-
-    class GotCharacterViewHolder extends RecyclerView.ViewHolder {
-
-        private static final String TAG = "GotCharacterViewHolder";
-
-        ImageView ivBackground;
-
-        public GotCharacterViewHolder(View itemView) {
-            super(itemView);
-            ivBackground = (ImageView) itemView.findViewById(R.id.ivBackground);
-        }
-
-        public void render(GoTHouse goTHouse) {
-            Picasso.with(activity).load(goTHouse.getHouseImageUrl()).into(ivBackground);
-        }
     }
 
 }

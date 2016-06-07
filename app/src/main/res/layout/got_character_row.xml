@@ -4,7 +4,7 @@
     android:layout_height="@dimen/row_height">
 
     <ImageView
-        android:id="@+id/ivBackground"
+        android:id="@+id/iv_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
@@ -16,7 +16,7 @@
         android:background="@drawable/row_gradient"/>
 
     <TextView
-        android:id="@+id/tvName"
+        android:id="@+id/tv_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

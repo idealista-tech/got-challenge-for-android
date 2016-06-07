@@ -27,8 +27,11 @@ import es.npatarino.android.gotchallenge.model.GoTHouse;
 import es.npatarino.android.gotchallenge.repository.GoTRepository;
 import es.npatarino.android.gotchallenge.view.adapter.GoTHouseAdapter;
 import es.npatarino.android.gotchallenge.view.listener.ItemClickListener;
+import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 
 public class GoTHousesListFragment extends FragmentBase implements ItemClickListener{
@@ -53,17 +56,25 @@ public class GoTHousesListFragment extends FragmentBase implements ItemClickList
         configRecyclerView();
         displayLoading(true);
 
+        getHouses();
+
+        return rootView;
+    }
+
+    private void getHouses() {
         goTRepository.getCharacters()
+                .map(goTCharacters -> Observable.from(goTCharacters)
+                        .concatMap(goTCharacter -> Observable.just(new GoTHouse(goTCharacter)))
+                        .filter(goTHouse -> goTHouse.getHouseId() != null && goTHouse.getHouseId().length() > 0)
+                        .distinct(GoTHouse::getHouseId).toList().toBlocking().single())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(characters -> {
+                .subscribe(houses -> {
                     displayLoading(false);
-                    displayHouses(characters);
+                    displayHouses(houses);
                 }, error -> {
                     displayLoading(false);
                 });
-
-        return rootView;
     }
 
     private void configRecyclerView() {
@@ -72,8 +83,7 @@ public class GoTHousesListFragment extends FragmentBase implements ItemClickList
         recyclerView.setAdapter(adapter);
     }
 
-    private void displayHouses(List<GoTCharacter> characters) {
-        ArrayList<GoTHouse> houses = extractHouses(characters);
+    private void displayHouses(List<GoTHouse> houses) {
         adapter.addAll(houses);
         adapter.notifyDataSetChanged();
     }
@@ -83,26 +93,6 @@ public class GoTHousesListFragment extends FragmentBase implements ItemClickList
             progressBar.show();
         else
             progressBar.hide();
-    }
-
-    @NonNull
-    private ArrayList<GoTHouse> extractHouses(List<GoTCharacter> characters) {
-        ArrayList<GoTHouse> houses = new ArrayList<>();
-        for (int i = 0; i < characters.size(); i++) {
-            boolean b = false;
-            for (int j = 0; j < houses.size(); j++) {
-                if (houses.get(j).getHouseName().equalsIgnoreCase(characters.get(i).getHouseName())) {
-                    b = true;
-                }
-            }
-            if (!b) {
-                if (characters.get(i).getHouseId() != null && !characters.get(i).getHouseId().isEmpty()) {
-                    houses.add(new GoTHouse(characters.get(i)));
-                    b = false;
-                }
-            }
-        }
-        return houses;
     }
 
     @Override
