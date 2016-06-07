@@ -5,7 +5,6 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import butterknife.ButterKnife;
 import es.npatarino.android.gotchallenge.view.listener.ItemClickListener;
 
 public class GoTViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -17,6 +16,7 @@ public class GoTViewHolder extends RecyclerView.ViewHolder implements View.OnCli
         super(itemView);
         this.context = context;
         this.itemClickListener = itemClickListener;
+        itemView.setOnClickListener(this);
     }
 
     @Override

@@ -8,7 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -21,6 +20,7 @@ import es.npatarino.android.gotchallenge.R;
 import es.npatarino.android.gotchallenge.injection.module.GoTHousesListFragmentModule;
 import es.npatarino.android.gotchallenge.model.GoTHouse;
 import es.npatarino.android.gotchallenge.repository.GoTRepository;
+import es.npatarino.android.gotchallenge.view.activity.HouseActivity;
 import es.npatarino.android.gotchallenge.view.adapter.GoTHouseAdapter;
 import es.npatarino.android.gotchallenge.view.listener.ItemClickListener;
 import rx.Observable;
@@ -97,6 +97,6 @@ public class GoTHousesListFragment extends FragmentBase implements ItemClickList
 
     @Override
     public void onItemClick(View view, int position) {
-        Toast.makeText(getActivity(), "Implementar Charecters By house", Toast.LENGTH_SHORT).show();
+        HouseActivity.launch(getActivity(), adapter.getItem(position));
     }
 }

@@ -20,21 +20,24 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import es.npatarino.android.gotchallenge.Constants;
 import es.npatarino.android.gotchallenge.GoTApplication;
 import es.npatarino.android.gotchallenge.R;
 import es.npatarino.android.gotchallenge.injection.module.GoTListFragmentModule;
 import es.npatarino.android.gotchallenge.model.GoTCharacter;
+import es.npatarino.android.gotchallenge.model.GoTHouse;
 import es.npatarino.android.gotchallenge.repository.GoTRepository;
 import es.npatarino.android.gotchallenge.view.activity.DetailActivity;
 import es.npatarino.android.gotchallenge.view.adapter.GoTAdapter;
 import es.npatarino.android.gotchallenge.view.listener.ItemClickListener;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 public class GoTListFragment extends FragmentBase implements ItemClickListener {
 
-    private static final String TAG = GoTListFragment.class.getSimpleName();
+    public static final String TAG = GoTListFragment.class.getSimpleName();
 
     @Inject GoTAdapter adapter;
     @Inject LayoutManager layoutManager;
@@ -45,8 +48,20 @@ public class GoTListFragment extends FragmentBase implements ItemClickListener {
 
     private SearchView searchView;
 
+    private GoTHouse goTHouse;
+
+    private String querySearch;
+
     public static Fragment newInstance() {
         return new GoTListFragment();
+    }
+
+    public static Fragment newInstanceHouse(GoTHouse house) {
+        Fragment fragment = new GoTListFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(Constants.ViewFlow.EXTRA_HOUSE, house);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -61,9 +76,37 @@ public class GoTListFragment extends FragmentBase implements ItemClickListener {
         return rootView;
     }
 
-    private void getCharacters() {
-        goTRepository.getCharacters()
-                .subscribeOn(Schedulers.io())
+    private void getHouse(){
+        if(getArguments() != null)
+            goTHouse = getArguments().getParcelable(Constants.ViewFlow.EXTRA_HOUSE);
+    }
+
+    private Observable<List<GoTCharacter>> getCharacters() {
+        return goTRepository.getCharacters();
+    }
+
+    private Observable<List<GoTCharacter>> getCharactersByHouse() {
+         return getCharacters()
+                .map(goTCharacters -> Observable.from(goTCharacters)
+                        .concatMap(Observable::just)
+                        .filter(goTCharacter -> goTCharacter.getHouseId().equals(goTHouse.getHouseId()))
+                        .toList().toBlocking().single());
+    }
+
+    private Observable<List<GoTCharacter>> getCharacterQuery() {
+        return getCharacters()
+                .map(goTCharacters -> Observable.from(goTCharacters)
+                        .concatMap(Observable::just)
+                        .filter(goTCharacter -> goTCharacter.getName().contains(querySearch))
+                        .toList().toBlocking().single());
+    }
+
+    private void getCharactersa(){
+
+        if(querySearch != null && !querySearch.isEmpty())
+            getCharacterQuery()
+        if(goTHouse != null)
+        .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(characters -> {
                     displayLoading(false);
@@ -118,9 +161,20 @@ public class GoTListFragment extends FragmentBase implements ItemClickListener {
     private void configSearchView(Menu menu) {
         MenuItem searchItem = menu.findItem(R.id.action_search);
         searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                querySearch = "";
+                displayLoading(true);
+                getCharacters();
+                return false;
+            }
+        });
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                querySearch = query;
                 displayLoading(true);
                 getCharacterQuery(query);
                 return false;
@@ -128,29 +182,9 @@ public class GoTListFragment extends FragmentBase implements ItemClickListener {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                if(newText.isEmpty()) {
-                    displayLoading(true);
-                    getCharacterQuery(newText);
-                }
                 return false;
             }
 
         });
-    }
-
-    private void getCharacterQuery(String query) {
-        goTRepository.getCharacters()
-                .map(goTCharacters -> Observable.from(goTCharacters)
-                        .concatMap(Observable::just)
-                        .filter(goTCharacter -> goTCharacter.getName().contains(query))
-                        .toList().toBlocking().single())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(characters -> {
-                    displayLoading(false);
-                    displayCharacters(characters);
-                }, error -> {
-                    displayLoading(false);
-                });
     }
 }

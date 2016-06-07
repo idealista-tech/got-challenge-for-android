@@ -9,6 +9,7 @@ import es.npatarino.android.gotchallenge.injection.module.GoTListFragmentModule;
 import es.npatarino.android.gotchallenge.injection.module.GoTModule;
 import es.npatarino.android.gotchallenge.injection.module.GoTRepositoryModule;
 import es.npatarino.android.gotchallenge.injection.module.HomeActivityModule;
+import es.npatarino.android.gotchallenge.injection.module.HouseActivityModule;
 
 @Singleton
 @Component(modules = {
@@ -18,6 +19,7 @@ import es.npatarino.android.gotchallenge.injection.module.HomeActivityModule;
 public interface GoTComponent {
     HomeActivityComponent plus(HomeActivityModule homeActivityModule);
     DetailActivityComponent plus(DetailActivityModule detailActivityModule);
+    HouseActivityComponent plus(HouseActivityModule houseActivityModule);
 
     GoTListFragmentComponent plus(GoTListFragmentModule goTListFragmentModule);
     GoTHousesListFragmentComponent plus(GoTHousesListFragmentModule goTHousesListFragmentModule);

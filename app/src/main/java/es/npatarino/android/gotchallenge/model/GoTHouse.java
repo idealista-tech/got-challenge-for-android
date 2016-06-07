@@ -1,6 +1,9 @@
 package es.npatarino.android.gotchallenge.model;
 
-public class GoTHouse {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class GoTHouse implements Parcelable {
 
     String houseImageUrl;
     String houseName;
@@ -36,4 +39,33 @@ public class GoTHouse {
         this.houseId = houseId;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(houseImageUrl);
+        dest.writeString(houseName);
+        dest.writeString(houseId);
+    }
+
+    protected GoTHouse(Parcel in) {
+        houseImageUrl = in.readString();
+        houseName = in.readString();
+        houseId = in.readString();
+    }
+
+    public static final Creator<GoTHouse> CREATOR = new Creator<GoTHouse>() {
+        @Override
+        public GoTHouse createFromParcel(Parcel in) {
+            return new GoTHouse(in);
+        }
+
+        @Override
+        public GoTHouse[] newArray(int size) {
+            return new GoTHouse[size];
+        }
+    };
 }

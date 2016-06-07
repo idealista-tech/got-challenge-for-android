@@ -24,7 +24,6 @@ public class GoTCharacterViewHolder extends GoTViewHolder {
     public GoTCharacterViewHolder(Context context, View itemView, ItemClickListener itemClickListener) {
         super(context, itemView, itemClickListener);
         ButterKnife.bind(this, itemView);
-        itemView.setOnClickListener(this);
     }
 
     public void render(GoTCharacter goTCharacter) {
