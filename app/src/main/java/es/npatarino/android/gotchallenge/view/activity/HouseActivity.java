@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import es.npatarino.android.gotchallenge.Constants;
 import es.npatarino.android.gotchallenge.GoTApplication;
 import es.npatarino.android.gotchallenge.R;
 import es.npatarino.android.gotchallenge.injection.module.HouseActivityModule;
@@ -17,8 +18,6 @@ import es.npatarino.android.gotchallenge.view.fragment.GoTListFragment;
 public class HouseActivity extends BaseActivity{
 
     public static final String TAG = HouseActivity.class.getSimpleName();
-
-    public static final String EXTRA_HOUSE = "HOUSE";
 
     @BindView(R.id.toolbar) Toolbar toolbar;
 
@@ -30,7 +29,7 @@ public class HouseActivity extends BaseActivity{
 
     private static Intent newInstance(Context context, GoTHouse house) {
         Intent intent = new Intent(context, HouseActivity.class);
-        intent.putExtra(EXTRA_HOUSE, house);
+        intent.putExtra(Constants.ViewFlow.EXTRA_HOUSE, house);
         return intent;
     }
 
@@ -57,7 +56,7 @@ public class HouseActivity extends BaseActivity{
     }
 
     private void getHouse() {
-        goTHouse = getIntent().getParcelableExtra(EXTRA_HOUSE);
+        goTHouse = getIntent().getParcelableExtra(Constants.ViewFlow.EXTRA_HOUSE);
     }
 
     @Override

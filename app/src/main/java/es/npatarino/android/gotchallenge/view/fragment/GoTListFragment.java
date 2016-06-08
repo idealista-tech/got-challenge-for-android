@@ -1,6 +1,7 @@
 package es.npatarino.android.gotchallenge.view.fragment;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.ContentLoadingProgressBar;
@@ -31,9 +32,7 @@ import es.npatarino.android.gotchallenge.view.activity.DetailActivity;
 import es.npatarino.android.gotchallenge.view.adapter.GoTAdapter;
 import es.npatarino.android.gotchallenge.view.listener.ItemClickListener;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
+import rx.Subscription;
 
 public class GoTListFragment extends FragmentBase implements ItemClickListener {
 
@@ -49,8 +48,9 @@ public class GoTListFragment extends FragmentBase implements ItemClickListener {
     private SearchView searchView;
 
     private GoTHouse goTHouse;
+    private String query;
 
-    private String querySearch;
+    private Subscription subscription;
 
     public static Fragment newInstance() {
         return new GoTListFragment();
@@ -62,6 +62,12 @@ public class GoTListFragment extends FragmentBase implements ItemClickListener {
         args.putParcelable(Constants.ViewFlow.EXTRA_HOUSE, house);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getHouse();
     }
 
     @Override
@@ -81,39 +87,31 @@ public class GoTListFragment extends FragmentBase implements ItemClickListener {
             goTHouse = getArguments().getParcelable(Constants.ViewFlow.EXTRA_HOUSE);
     }
 
-    private Observable<List<GoTCharacter>> getCharacters() {
-        return goTRepository.getCharacters();
+    private void getCharacters(){
+        Observable<GoTCharacter> character = goTRepository.getCharacters()
+                .concatMap(Observable::from);
+        character = checkHouse(character);
+        character = checkQuery(character);
+        subscription = character.toList().subscribe(characters -> {
+                displayLoading(false);
+                displayCharacters(characters);
+            }, error -> {
+                displayLoading(false);
+            });
     }
 
-    private Observable<List<GoTCharacter>> getCharactersByHouse() {
-         return getCharacters()
-                .map(goTCharacters -> Observable.from(goTCharacters)
-                        .concatMap(Observable::just)
-                        .filter(goTCharacter -> goTCharacter.getHouseId().equals(goTHouse.getHouseId()))
-                        .toList().toBlocking().single());
+    private Observable<GoTCharacter> checkQuery(Observable<GoTCharacter> character){
+        if(query != null && !query.isEmpty())
+            character = character.filter(goTCharacter ->
+                    goTCharacter.getName().contains(query));
+        return character;
     }
 
-    private Observable<List<GoTCharacter>> getCharacterQuery() {
-        return getCharacters()
-                .map(goTCharacters -> Observable.from(goTCharacters)
-                        .concatMap(Observable::just)
-                        .filter(goTCharacter -> goTCharacter.getName().contains(querySearch))
-                        .toList().toBlocking().single());
-    }
-
-    private void getCharactersa(){
-
-        if(querySearch != null && !querySearch.isEmpty())
-            getCharacterQuery()
+    private Observable<GoTCharacter> checkHouse(Observable<GoTCharacter> character){
         if(goTHouse != null)
-        .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(characters -> {
-                    displayLoading(false);
-                    displayCharacters(characters);
-                }, error -> {
-                    displayLoading(false);
-                });
+            character = character.filter(goTCharacter ->
+                    goTCharacter.getHouseId().equals(goTHouse.getHouseId()));
+        return character;
     }
 
     private void displayCharacters(List<GoTCharacter> characters) {
@@ -162,21 +160,19 @@ public class GoTListFragment extends FragmentBase implements ItemClickListener {
         MenuItem searchItem = menu.findItem(R.id.action_search);
         searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
-        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-            @Override
-            public boolean onClose() {
-                querySearch = "";
-                displayLoading(true);
-                getCharacters();
-                return false;
-            }
+        searchView.setOnCloseListener(() -> {
+            query = "";
+            displayLoading(true);
+            getCharacters();
+            return false;
         });
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public boolean onQueryTextSubmit(String query) {
-                querySearch = query;
+            public boolean onQueryTextSubmit(String query2) {
+                query = query2;
                 displayLoading(true);
-                getCharacterQuery(query);
+                getCharacters();
                 return false;
             }
 
@@ -184,7 +180,13 @@ public class GoTListFragment extends FragmentBase implements ItemClickListener {
             public boolean onQueryTextChange(String newText) {
                 return false;
             }
-
         });
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (subscription != null && !subscription.isUnsubscribed())
+            subscription.unsubscribe();
     }
 }
